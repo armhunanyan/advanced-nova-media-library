@@ -1,5 +1,7 @@
 # Laravel Advanced Nova Media Library
 
+This fork solves all the issues related to custom properties.
+
 Manage images of [spatie's media library package](https://github.com/spatie/laravel-medialibrary). Upload multiple
 images and order them by drag and drop.
 
