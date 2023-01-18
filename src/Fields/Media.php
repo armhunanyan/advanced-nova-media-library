@@ -222,11 +222,15 @@ class Media extends Field
                 return $value instanceof UploadedFile || is_array($value);
             })->map(function ($file, int $index) use ($request, $model, $collection) {
                 if ($file instanceof UploadedFile) {
+                    foreach ($this->customPropertiesFields as $field) {
+                        $requestAttribute = "__media-custom-properties__.{$collection}.{$index}.{$field->attribute}";
+                        $properties[$field->attribute] = $request->input($requestAttribute);
+                        $this->customProperties($properties);
+                    }
                     $media = $model->addMedia($file)->withCustomProperties($this->customProperties);
 
                     $fileName = $file->getClientOriginalName();
                     $fileExtension = $file->getClientOriginalExtension();
-
                 } else {
                     $media = $this->makeMediaFromVaporUpload($file, $model);
 
@@ -238,7 +242,7 @@ class Media extends Field
                     $media->withResponsiveImages();
                 }
 
-                if (! empty($this->customHeaders)) {
+                if (!empty($this->customHeaders)) {
                     $media->addCustomHeaders($this->customHeaders);
                 }
 
@@ -325,11 +329,11 @@ class Media extends Field
     {
         $resource->registerMediaCollections();
         $isSingle = collect($resource->mediaCollections)
-                ->where('name', $collectionName)
-                ->first()
-                ->singleFile ?? false;
+            ->where('name', $collectionName)
+            ->first()
+            ->singleFile ?? false;
 
-        $this->withMeta(['multiple' => ! $isSingle]);
+        $this->withMeta(['multiple' => !$isSingle]);
     }
 
     public function serializeMedia(\Spatie\MediaLibrary\MediaCollections\Models\Media $media): array
